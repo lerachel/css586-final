@@ -1,7 +1,12 @@
-#%%
 import pandas as pd
 import torch
 import numpy as np
+import dgl
+import dgl.function as fn
+import dgl.nn as dglnn
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
 
 def buildGraph():
     A = pd.read_csv("data/DCh-Miner_miner-disease-chemical.tsv", sep="\t")
@@ -68,3 +73,12 @@ def buildGraph():
         DGn[i,1] = geneMap[DGn[i,1]]
     
     return DCh, DPt, DGn, maps
+
+def construct_negative_graph(graph, k, etype):
+    utype, _, vtype = etype
+    src, dst = graph.edges(etype=etype)
+    neg_src = src.repeat_interleave(k)
+    neg_dst = torch.randint(0, graph.num_nodes(vtype), (len(src) * k,))
+    return dgl.heterograph(
+        {etype: (neg_src, neg_dst)},
+        num_nodes_dict={ntype: graph.num_nodes(ntype) for ntype in graph.ntypes})
