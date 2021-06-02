@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[86]:
+# In[1]:
 
 
 import dgl
@@ -118,20 +118,24 @@ def compute_roc_curve(pos_score, neg_score):
     return roc_curve(labels, scores, pos_label=1)
 
 
-# In[80]:
+# In[9]:
 
 
 # Open two tsv files, extract edge lists, combine datasets
+
+print('Opening disease-gene & disease-chemical datasets from .tsv files...')
 
 file1 = pd.read_csv('DG-Miner_miner-disease-gene.tsv','\t')
 file2 = pd.read_csv('DCh-Miner_miner-disease-chemical.tsv', sep='\t')
 file = np.concatenate( (file1.to_numpy(), file2.to_numpy()), axis=0)
 
 
-# In[90]:
+# In[10]:
 
 
 # Extract disease, gene, chemicals
+
+print('Extracting disease, gene, chemical data...')
 
 disease1 = list(file1.iloc[:, 0])
 disease2 = list(file2.iloc[:, 0])
@@ -148,20 +152,23 @@ unique_chem = list(set(chem))
 unique_gene = list(set(gene))
 
 
-# In[91]:
+# In[11]:
 
 
-# Create lookup table
+'''# Create lookup table
 
+print('Create lookup tables for disease, gene and chemicals...')
 disease_map = {unique_disease[i]: i for i in range(len(unique_disease))}
 gene_map =       {unique_gene[i]: i for i in range(len(unique_gene))}
 chem_map =       {unique_chem[i]: i for i in range(len(unique_chem))}
+'''
 
 
-# In[131]:
+# In[12]:
 
 
 # Create numerical labels for disease, gene, chemical
+print('Applying Label Encoding for disease, gene and chemicals...')
 
 disease_encoder = LabelEncoder()
 gene_encoder = LabelEncoder()
@@ -172,10 +179,12 @@ encoded_gene = gene_encoder.fit_transform(gene)
 encoded_chem = chem_encoder.fit_transform(chem)
 
 
-# In[174]:
+# In[13]:
 
 
 # Create new datasets with encoded labels
+
+print('Creating new datasets with encoded labels...')
 
 encoded_gene = encoded_gene.reshape(-1,1)
 encoded_chem = encoded_chem.reshape(-1,1)
@@ -184,22 +193,25 @@ dataset1 = np.hstack((encoded_disease[:len(file1)], encoded_gene))
 dataset2 = np.hstack((encoded_disease[len(file1):], encoded_chem))
 
 
-# In[176]:
+# In[14]:
 
 
 # train test split here
 # Need equal amount of training and testing samples for both types of links
 # Allocate 0.5 for each types of link
 
+print('Applying train_test_split, taking 0.5 from disease-gene and 0.5 from disease-chem for testing...')
 # train1, test1 are disease-gene; train2, test2 are disease-chem
 train1, test1 = train_test_split(dataset1, test_size = 0.5, random_state = 101)
 train2, test2 = train_test_split(dataset2, test_size = 0.5, random_state = 101)
 
 
-# In[177]:
+# In[15]:
 
 
 # Create 2 heterographs: 1 for training, 1 for testing
+
+print('Creating train and test graphs...')
 
 # Use train1 and train2
 train_graph = dgl.heterograph({
@@ -219,8 +231,83 @@ test_graph = dgl.heterograph({
 })
 
 
-# In[178]:
+# In[24]:
 
 
-train_graph
+print("#### Train graph's metadata #### \n{}\n".format(train_graph))
+print("#### Test graph's metadata #### \n{}\n".format(test_graph))
+
+
+# In[ ]:
+
+
+print('Starting training...')
+
+test_losses = []
+train_losses = []
+test_aucs = []
+train_aucs = []
+
+in_features, hidden_features, out_features = 15, 5, 5
+print('in_features = {}'.format(in_features))
+print('hidden_features = {}'.format(hidden_features))
+print('out_features = {}'.format(out_features))
+
+k = 5
+model = Model(train_graph, 15, 15, 5)
+opt = torch.optim.Adam(model.parameters(),lr=0.01, weight_decay=5e-4)
+num_epochs = 10 #300
+for epoch in range(num_epochs):
+    
+    # Make 2 negative graphs for 2 types of links: disease-gene, drug-disease
+    dg_neg_g = construct_negative_graph(train_graph, k, ('disease', 'relate', 'gene'))
+    dc_neg_g = construct_negative_graph(train_graph, k, ('drug', 'treats', 'disease'))
+    
+    # calculate 2 losses
+    dg_pos_score, dg_neg_score = model(train_graph, dg_neg_g, ('disease', 'relate', 'gene'))
+    dc_pos_score, dc_neg_score = model(train_graph, dc_neg_g, ('drug', 'treats', 'disease')) 
+    pos_score = torch.cat((dg_pos_score, dc_pos_score), axis=0)
+    neg_score = torch.cat((dg_neg_score, dc_neg_score), axis=0)
+    
+    loss_dg = compute_loss(dg_pos_score, dg_neg_score)
+    loss_dc = compute_loss(dc_pos_score, dc_neg_score)
+    loss = loss_dg + loss_dc
+    
+    opt.zero_grad()
+    loss.backward()
+    train_loss = loss.item()
+    opt.step()
+    
+    print(epoch)
+    
+    with torch.no_grad():
+        
+        # Testing
+        
+        dg_neg_test_graph = construct_negative_graph(test_graph, k, ('disease', 'relate', 'gene'))
+        dc_neg_test_graph = construct_negative_graph(test_graph, k, ('drug', 'treats', 'disease'))
+        
+        dg_test_pos, dg_test_neg = model(test_graph, dg_neg_test_graph, ('disease', 'relate', 'gene'))
+        dc_test_pos, dc_test_neg = model(test_graph, dc_neg_test_graph, ('drug', 'treats', 'disease'))
+        
+        test_loss_dg = compute_loss(dg_test_pos, dg_test_neg)
+        test_loss_dc = compute_loss(dc_test_pos, dc_test_neg)
+        test_loss = test_loss_dg + test_loss_dc
+        
+        test_pos = torch.cat((dg_test_pos, dc_test_pos), axis=0)
+        test_neg = torch.cat((dg_test_neg, dc_test_neg), axis=0)
+        
+        auc = compute_auc(test_pos, test_neg)
+        train_auc = compute_auc(pos_score, neg_score)
+        
+        # get validation/test scores
+        if epoch % 5 ==0:
+            print('Epoch %d/%d -- Training Loss: %0.3f, Test Loss: %0.3f,AUC: %0.3f' % (epoch,num_epochs,train_loss, test_loss.item(), auc))
+    
+
+
+# In[ ]:
+
+
+
 
