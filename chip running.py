@@ -12,34 +12,8 @@ from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.model_selection import train_test_split
 from torch.utils.tensorboard import SummaryWriter
 from matplotlib import pyplot as plt
-import buildGraph
-
-class HeteroDotProductPredictor(nn.Module):
-    def forward(self, graph, h, etype):
-        # h contains the node representations for each node type computed from
-        # the GNN defined in the previous section (Section 5.1).
-        with graph.local_scope():
-            graph.ndata['h'] = h
-            graph.apply_edges(fn.u_dot_v('h', 'h', 'score'), etype=etype)
-            return graph.edges[etype].data['score']
-
-class RGCN(nn.Module):
-    def __init__(self, in_feats, hid_feats, out_feats, rel_names):
-        super().__init__()
-
-        self.conv1 = dglnn.HeteroGraphConv({
-            rel: dglnn.GraphConv(in_feats, hid_feats)
-            for rel in rel_names}, aggregate='sum')
-        self.conv2 = dglnn.HeteroGraphConv({
-            rel: dglnn.GraphConv(hid_feats, out_feats)
-            for rel in rel_names}, aggregate='sum')
-
-    def forward(self, graph, inputs):
-        # inputs are features of nodes
-        h = self.conv1(graph, inputs)
-        h = {k: F.leaky_relu(v) for k, v in h.items()}
-        h = self.conv2(graph, h)
-        return h
+import projectUtils
+import graph_models
 
 def construct_negative_graph(graph, k, etype):
     utype, _, vtype = etype
@@ -54,8 +28,8 @@ def construct_negative_graph(graph, k, etype):
 class Model(nn.Module):
     def __init__(self, G, in_features, hidden_features, out_features):
         super().__init__()
-        self.sage = RGCN(in_features, hidden_features, out_features, G.etypes)
-        self.pred = HeteroDotProductPredictor()
+        self.sage = graph_models.RGCN(in_features, hidden_features, out_features, G.etypes)
+        self.pred = graph_models.HeteroDotProductPredictor()
 
         embed_dict = {ntype : nn.Parameter(torch.Tensor(G.number_of_nodes(ntype), in_features))
                       for ntype in G.ntypes}
@@ -88,14 +62,16 @@ def compute_roc_curve(pos_score, neg_score):
 
 writer = SummaryWriter()
 
-diseaseDrug, diseasePathway, diseaseGene, maps = buildGraph.buildGraph()
+diseaseDrug, diseasePathway, diseaseGene, maps = projectUtils.buildGraph()
 
 tmp = diseaseDrug.astype('int64')
 diseasePathway = diseasePathway.astype('int64')
+diseaseGene = diseaseGene.astype('int64')
 
 ## train test split here
-train, test = train_test_split(tmp, test_size = 0.1, random_state = 12)
-pathTrain, pathTest = train_test_split(diseasePathway, test_size = 0.1, random_state = 12)
+train, test = train_test_split(tmp, test_size = 0.2, random_state = 12)
+pathTrain, pathTest = train_test_split(diseasePathway, test_size = 0.2, random_state = 7)
+geneTrain, geneTest = train_test_split(diseaseGene, test_size = 0.2, random_state = 3)
 
 #make two graphs, one for test one for training
 hetero_graph = dgl.heterograph({
@@ -123,7 +99,7 @@ model = Model(hetero_graph,15, 15, 5)
 opt = torch.optim.Adam(model.parameters(),lr=0.01, weight_decay=5e-4)
 num_epochs = 3
 for epoch in range(num_epochs):
-    negative_graph = construct_negative_graph(hetero_graph, k, ('drug', 'treats', 'disease'))
+    negative_graph = projectUtils.construct_negative_graph(hetero_graph, k, ('drug', 'treats', 'disease'))
     pos_score, neg_score = model(hetero_graph, negative_graph, ('drug', 'treats', 'disease'))
     loss = compute_loss(pos_score, neg_score)
     opt.zero_grad()
@@ -132,7 +108,7 @@ for epoch in range(num_epochs):
     opt.step()
     with torch.no_grad():
         #predit on test graph
-        neg_test_graph = construct_negative_graph(test_graph, k, ('drug', 'treats', 'disease'))
+        neg_test_graph = projectUtils.construct_negative_graph(test_graph, k, ('drug', 'treats', 'disease'))
         test_pos, test_neg = model(test_graph, neg_test_graph, ('drug', 'treats', 'disease'))
         test_loss = compute_loss(test_pos, test_neg)
         auc = compute_auc(test_pos, test_neg)
@@ -152,7 +128,7 @@ for epoch in range(num_epochs):
 
 with torch.no_grad():
 
-    neg_test_graph = construct_negative_graph(test_graph, k, ('drug', 'treats', 'disease'))
+    neg_test_graph = projectUtils.construct_negative_graph(test_graph, k, ('drug', 'treats', 'disease'))
     test_pos, test_neg = model(test_graph, neg_test_graph, ('drug', 'treats', 'disease'))
 
     fpr, tpr, thresholds = compute_roc_curve(test_pos, test_neg)
