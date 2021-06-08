@@ -425,7 +425,7 @@ class ModelMix(Model):
 ### BEGIN MAIN CODE ###
 
 #set num epochs used for evaluation and hyper-parametersearch here
-n_epochs = 2
+n_epochs = 300
 
 #get data from build graph
 diseaseDrug, diseasePathway, diseaseGene, maps = buildGraph()
