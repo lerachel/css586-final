@@ -116,8 +116,10 @@ Create a virtual environment with Python 3.6 or above and activate it.
 
 Run Python files. For Rachel's example, to run model 7 with combined dataset, 2 edge type prediction, in_feat, hid_feat, out_feat, number of HeteroGraphCV:  
    ```sh
-   python rachel_main.py --link 2 --in_feat 20 --hid_feat 20 --out_feat 20 --layer 2
+   python rachel_main.py --link 2 --in_feat 20 --hid_feat 20 --out_feat 10 --layer 2
    ```
+Running without any parsed argument would set the model default to model 2.
+
 To run rachel_disease_gene.py:
    ```sh
    python rachel_disease_gene.py
