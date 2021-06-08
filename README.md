@@ -87,7 +87,7 @@ Create a virtual environment with Python 3.6 or above and activate it.
 
 ### Installation
 
-1. Install Pytorch
+1. Install Pytorch. Please use this [Pytorch guide](https://pytorch.org/get-started/locally/) to get the right Pytorch version for your computer. For our lab machine, we use this version for CUDA 11.1.
    ```sh
 	pip3 install torch==1.8.1+cu111 torchvision==0.9.1+cu111 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
    ```
@@ -102,37 +102,32 @@ Create a virtual environment with Python 3.6 or above and activate it.
    ```sh
    git clone https://github.com/lerachel/css586-final.git
    ```
-5. Run Python files. For Rachel's example, to run model 7 with combined dataset, 2 edge type prediction, in_feat, hid_feat, out_feat, number of HeteroGraphCV:	
+5. Download datasets to repo directory from [here] (https://drive.google.com/drive/folders/1KcAMPcltQ_VdNRz06VVsol6cZVZQqwsa?usp=sharing). You must log in with UW email to be able to download. 
+If you don't have a UW email, you can download DG-Miner and DCh-Miner datasets from [BioSNAP website](http://snap.stanford.edu/biodata/index.html).
 
-   ```sh
-   pip rachel_main.py --link 2 --in_feat 20 --hid_feat 20 --out_feat 20 --layer 2
-   ```
-   
-<br />
-<p align="center">
-  <a href="https://i.ibb.co/ZKc4P3y/Screen-Shot-2021-06-08-at-1-22-56-PM.png">
-    <img src="https://i.ibb.co/ZKc4P3y/Screen-Shot-2021-06-08-at-1-22-56-PM.png" alt="Logo" width="407" height="427">
-  </a>
-  <p align="center">
-    Example of Run screenshot
-  </p>
-</p>
-
-<br />
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+Run Python files. For Rachel's example, to run model 7 with combined dataset, 2 edge type prediction, in_feat, hid_feat, out_feat, number of HeteroGraphCV:  
+   ```sh
+   python rachel_main.py --link 2 --in_feat 20 --hid_feat 20 --out_feat 20 --layer 2
+   ```
+To run rachel_disease_gene.py:
+   ```sh
+   python rachel_disease_gene.py
+   ```
+<br />
+<p align="center">
+  <a href="https://i.ibb.co/ZKc4P3y/Screen-Shot-2021-06-08-at-1-22-56-PM.png">
+    <img src="https://i.ibb.co/ZKc4P3y/Screen-Shot-2021-06-08-at-1-22-56-PM.png" alt="run screenshot" width="407" height="427">
+  </a>
+  <p align="center">
+    Example of Run screenshot for rachel_main.py
+  </p>
+</p>
 
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
+<br />
 
 
 <!-- CONTACT -->
