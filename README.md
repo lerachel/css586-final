@@ -19,7 +19,7 @@ Graph Neural Networks
 </h3>
 
   <p align="center">
-    Predicting disease-gene and disease-drug link using Relational Graph Convolutional Networks in Deep Graph Library Implementation
+    Predicting disease-gene and disease-drug link using RGCN in DGL implementation
     <br />
   </p>
 </p>
@@ -103,17 +103,16 @@ Create a virtual environment with Python 3.6 or above and activate it.
 	pip install dgl
 	```
 3. Install other packages such as scikit-learn, tensorboard, pandas, etc.
+
 4. Clone the repo
    ```sh
    git clone https://github.com/lerachel/css586-final.git
    ```
-5. Run Python files. Examples:
-Rachel's files:
+5. Run Python files. For Rachel's example, to run model 7 with combined dataset, 2 edge type prediction, in_feat, hid_feat, out_feat, number of HeteroGraphCV:	
 
-For model 7 with combined dataset, 2 edge type prediction, in_feat, hid_feat, out_feat, number of HeteroGraphCV	
-	 ```sh
-	python rachel_main.py --link 2 --in_feat 20 --hid_feat 20 --out_feat 20 --layer 2
-	 ```
+   ```sh
+   pip rachel_main.py --link 2 --in_feat 20 --hid_feat 20 --out_feat 20 --layer 2
+   ```
    
 <br />
 <p align="center">
