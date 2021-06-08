@@ -11,7 +11,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="https://i.ibb.co/HdstZLw/final1.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Link Prediction for Biomedical Data using 
@@ -114,7 +114,17 @@ For model 7 with combined dataset, 2 edge type prediction, in_feat, hid_feat, ou
 	```sh
 	python rachel_main.py --link 2 --in_feat 20 --hid_feat 20 --out_feat 20 --layer 2
 	```
-[![Example of Run screenshot][product-screenshot]](https://i.ibb.co/ZKc4P3y/Screen-Shot-2021-06-08-at-1-22-56-PM.png)
+<br />
+<p align="center">
+  <a href="https://i.ibb.co/HdstZLw/final1.png">
+    <img src="https://i.ibb.co/HdstZLw/final1.png" alt="Logo" width="80" height="80">
+  </a>
+  <p align="center">
+    Example of Run screenshot
+  </p>
+</p>
+
+<br />
 
 <!-- USAGE EXAMPLES -->
 ## Usage
