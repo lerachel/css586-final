@@ -111,9 +111,10 @@ Create a virtual environment with Python 3.6 or above and activate it.
 Rachel's files:
 
 For model 7 with combined dataset, 2 edge type prediction, in_feat, hid_feat, out_feat, number of HeteroGraphCV	
-	```sh
+	 ```sh
 	python rachel_main.py --link 2 --in_feat 20 --hid_feat 20 --out_feat 20 --layer 2
-	```
+	 ```
+   
 <br />
 <p align="center">
   <a href="https://i.ibb.co/ZKc4P3y/Screen-Shot-2021-06-08-at-1-22-56-PM.png">
