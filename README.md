@@ -136,6 +136,16 @@ To run rachel_disease_gene.py:
 
 <br />
 
+To run Chip's file:
+```sh
+   python3 chip_main.py
+   ```
+If desired to run a subset of the models the n_epochs value on line 428 can be adjusted to lower the number of epochs used in parameter searches. Each search block is able to be commented out and ran separately. These are denoted similar to the following:
+```sh
+   ## Begin number of convolutions comparison ##
+   ```
+
+
 
 <!-- CONTACT -->
 ## Contact
