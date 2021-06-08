@@ -117,7 +117,7 @@ For model 7 with combined dataset, 2 edge type prediction, in_feat, hid_feat, ou
 <br />
 <p align="center">
   <a href="https://i.ibb.co/ZKc4P3y/Screen-Shot-2021-06-08-at-1-22-56-PM.png">
-    <img src="https://i.ibb.co/ZKc4P3y/Screen-Shot-2021-06-08-at-1-22-56-PM.png" alt="Logo" width="80" height="80">
+    <img src="https://i.ibb.co/ZKc4P3y/Screen-Shot-2021-06-08-at-1-22-56-PM.png" alt="Logo" width="407" height="427">
   </a>
   <p align="center">
     Example of Run screenshot
