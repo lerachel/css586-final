@@ -1,3 +1,11 @@
+'''
+projectUtils.py
+2/4 Python files submitted for CSS 586 final
+Chip Kirchner
+6/8/2021
+
+Base models and utility functions were developed jointly with partners Chip Kirchner and Rachel Le unless otherwise noted in the comments below
+'''
 import pandas as pd
 import torch
 import numpy as np
@@ -8,6 +16,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+#function returns the three data sets used to build the graph for main code
 def buildGraph():
     print("Pre-processing Graph Edge Lists...\n")
 
@@ -87,6 +96,9 @@ def buildGraph():
 
     return DCh, DPt, DGn, maps
 
+#function to build inverse graph adapted from Deep Graph Library
+#Reference: https://docs.dgl.ai/en/0.6.x/guide/training-link.html
+#build a graph of 'negative' link samples for link prediction classifier
 def construct_negative_graph(graph, k, etype):
     utype, _, vtype = etype
     src, dst = graph.edges(etype=etype)
