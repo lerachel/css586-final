@@ -56,6 +56,10 @@ Motivation:
 * Learn graph neural networks
 * Learn how to use Deep Graph Library and Pytorch
 
+Datasets:
+* [DG-Miner (disease-gene)](http://snap.stanford.edu/biodata/datasets/10020/10020-DG-Miner.html)
+* [DCh-Miner (disease-drug)](http://snap.stanford.edu/biodata/datasets/10004/10004-DCh-Miner.html)
+
 ### Packages
 
 To run this repository, you will need to install the following packages in your virtual Python environment:
@@ -103,8 +107,8 @@ Create a virtual environment with Python 3.6 or above and activate it.
    git clone https://github.com/lerachel/css586-final.git
    ```
 5. Download datasets to repo directory from [here](https://drive.google.com/drive/folders/1KcAMPcltQ_VdNRz06VVsol6cZVZQqwsa?usp=sharing). You must log in with UW email to be able to download. 
-<br />
-If you don't have a UW email, you can download DG-Miner and DCh-Miner datasets from [BioSNAP website](http://snap.stanford.edu/biodata/index.html).
+
+6. If step 5 is not applicable, you can download DG-Miner and DCh-Miner datasets from [BioSNAP website](http://snap.stanford.edu/biodata/index.html).
 
 
 <!-- USAGE EXAMPLES -->
