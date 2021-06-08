@@ -102,7 +102,7 @@ Create a virtual environment with Python 3.6 or above and activate it.
    ```sh
    git clone https://github.com/lerachel/css586-final.git
    ```
-5. Download datasets to repo directory from [here] (https://drive.google.com/drive/folders/1KcAMPcltQ_VdNRz06VVsol6cZVZQqwsa?usp=sharing). You must log in with UW email to be able to download. 
+5. Download datasets to repo directory from [here](https://drive.google.com/drive/folders/1KcAMPcltQ_VdNRz06VVsol6cZVZQqwsa?usp=sharing). You must log in with UW email to be able to download. <br />
 If you don't have a UW email, you can download DG-Miner and DCh-Miner datasets from [BioSNAP website](http://snap.stanford.edu/biodata/index.html).
 
 
