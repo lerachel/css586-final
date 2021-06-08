@@ -9,6 +9,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 def buildGraph():
+    print("Pre-processing Graph Edge Lists...\n")
+
     A = pd.read_csv("data/DCh-Miner_miner-disease-chemical.tsv", sep="\t")
 
     B = pd.read_csv("data/CTD_diseases_pathways.tsv", sep="\t")
@@ -17,32 +19,43 @@ def buildGraph():
 
     #convert diseases to order set for ID'ing
     diseaseA = A['# Disease(MESH)'].tolist()
-
-    diseaseA = list(set(diseaseA))
-
-    diseaseB = B['DiseaseID'].tolist()
-
-    diseaseB = list(set(diseaseB))
-
-    diseaseC = C['# Disease(MESH)'].tolist()
-
-    diseaseC = list(set(diseaseC))
-
-    disease = list(set(diseaseA + diseaseB + diseaseC))
-
     #convert chemicals to ordered set for ID'ing
     chem = A['Chemical'].tolist()
-
+    #remove duplicates by converting to set
     chem = list(set(chem))
+    #get the raw number of edges in list
+    num_edges = len(diseaseA)
+    #remove duplicates by converting to set
+    diseaseA = list(set(diseaseA))
 
+    print("\t Loading disease chemical edge list...")
+    print("\t %d Edges, %d Diseases, %d Drugs " % (num_edges,len(diseaseA),len(chem)))    
+
+
+    diseaseB = B['DiseaseID'].tolist()
+    num_edges = len(diseaseB)
+    diseaseB = list(set(diseaseB))
     #convert pathways to ordered set for ID'ing
     pathway = B['PathwayID'].tolist()
     pathway = list(set(pathway))
 
+    print("\t Loading disease-pathway edge list...")
+    print("\t %d Edges, %d Diseases, %d Pathways " % (num_edges,len(diseaseB),len(pathway))) 
+
+
+    diseaseC = C['# Disease(MESH)'].tolist()
+    num_edges = len(diseaseC)
+    diseaseC = list(set(diseaseC))
     #convert genes to ordered set for ID'ing
     gene = C['Gene'].tolist()
     gene = list(set(gene))
+    
+    print("\t Loading disease-gene edge list...")
+    print("\t %d Edges, %d Diseases, %d Genes \n" % (num_edges,len(diseaseC),len(gene))) 
 
+    #outer join all three lists
+    disease = list(set(diseaseA + diseaseB + diseaseC))
+    
     #create map for edge list generation and future lookup
     diseaseMap = {disease[i]: i for i in range(len(disease))}
     chemMap = {chem[i]: i for i in range(len(chem))}
@@ -71,7 +84,7 @@ def buildGraph():
     for i in range(np.shape(DGn)[0]):
         DGn[i,0] = diseaseMap[DGn[i,0]]
         DGn[i,1] = geneMap[DGn[i,1]]
-    
+
     return DCh, DPt, DGn, maps
 
 def construct_negative_graph(graph, k, etype):
