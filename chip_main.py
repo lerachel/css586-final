@@ -191,11 +191,11 @@ class RGCNMix(RGCN):
 def buildGraph():
     print("Pre-processing Graph Edge Lists...\n")
 
-    A = pd.read_csv("data/DCh-Miner_miner-disease-chemical.tsv", sep="\t")
+    A = pd.read_csv("DCh-Miner_miner-disease-chemical.tsv", sep="\t")
 
-    B = pd.read_csv("data/CTD_diseases_pathways.tsv", sep="\t")
+    B = pd.read_csv("CTD_diseases_pathways.tsv", sep="\t")
 
-    C = pd.read_csv("data/DG-Miner_miner-disease-gene.tsv", sep="\t")
+    C = pd.read_csv("DG-Miner_miner-disease-gene.tsv", sep="\t")
 
     #convert diseases to order set for ID'ing
     diseaseA = A['# Disease(MESH)'].tolist()
